@@ -8,11 +8,59 @@ Example PHP code snippets for Stream Video API integration
 
 - PHP: ^8.1
 
-## Set up
+## Install dependencies
 
 Install dependencies:
 ```bash
 composer install
+```
+
+## Run the project
+
+Create a `.env` file in the repository root, with this content:
+
+```
+STREAM_API_KEY=<Your API key>
+STREAM_API_SECRET=<Your API secret>
+```
+
+### Tests
+
+```bash
+composer test
+```
+
+### Main file
+
+```bash
+php src/main.php
+```
+
+## Create client
+
+```php
+use App\Client;
+
+$apiKey = $_ENV['STREAM_API_KEY'];
+$apiSecret = $_ENV['STREAM_API_SECRET'];
+    
+$client = new Client($apiKey, $apiSecret);
+```
+
+## Create or update users
+
+API docs: https://getstream.io/video/docs/api/authentication/#creating-users
+
+```php
+$inputUser = new UserData(
+    id: 'sara',
+    role: 'user',
+    name: 'Sara',
+    image: 'https://example.com/avatar.jpg',
+    custom: ['nickname' => 'Sara']
+);
+
+$response = $client->upsertUsers([$inputUser]);
 ```
 
 ## Token creation
@@ -22,10 +70,7 @@ Stream API documentation for tokens: https://getstream.io/video/docs/api/authent
 ### Provide user id
 
 ```php
-use App\Client;
 use App\DTO\TokenParams;
-
-$client = new Client('your-api-secret');
 
 // Create a basic token with just a user ID
 $token = $client->createToken(new TokenParams(
@@ -44,6 +89,8 @@ $token = $client->createToken(new TokenParams(
 ```
 
 ### Create call token
+
+Allows access for specific calls only
 
 ```php
 use App\DTO\CallTokenParams;
@@ -65,3 +112,19 @@ $token = $client->createCallToken(new CallTokenParams(
     role: 'admin'
 ));
 ```
+
+## Delete users
+
+API docs: https://getstream.io/video/docs/api/gdpr/users/#users-deletion
+
+```php
+$response = $client->deleteUsers([$user['id']], [
+    'user' => 'hard',
+    'calls' => 'hard'
+]);
+```
+
+## Useful resources
+
+- API docs: https://getstream.io/video/docs/api/
+- API spec file: https://github.com/GetStream/protocol/blob/main/openapi/v2/video-serverside-api.yaml

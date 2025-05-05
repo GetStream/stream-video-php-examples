@@ -59,4 +59,19 @@ class TokenService
     {
         return $this->createToken($params);
     }
+
+    /**
+     * Creates a signed JWT token specifically for server authentication
+     * 
+     * @return string The generated JWT token
+     * @throws InvalidArgumentException When parameters are invalid
+     */
+    public function createServerToken(): string
+    {
+        $payload = [
+            'server' => true
+        ];
+
+        return JWT::encode($payload, $this->apiSecret, 'HS256');
+    }
 } 
