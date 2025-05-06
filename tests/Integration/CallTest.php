@@ -23,20 +23,16 @@ class CallTest extends TestCase
 
     protected function setUp(): void
     {
-        // Load environment variables
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
         $dotenv->load();
         
-        // Initialize client with credentials from .env
         $this->client = new Client(
             $_ENV['STREAM_API_KEY'],
             $_ENV['STREAM_API_SECRET']
         );
 
-        // Generate a unique call ID for tests
         $this->callId = Uuid::uuid4()->toString();
 
-        // Create test users
         $this->createTestUsers();
     }
 
@@ -58,19 +54,8 @@ class CallTest extends TestCase
         $this->testUsers = array_keys($response['users']);
     }
 
-    private function deleteTestUsers(): void
-    {
-        if (!empty($this->testUsers)) {
-            $this->client->deleteUsers($this->testUsers, [
-                'user' => 'hard',
-                'calls' => 'hard'
-            ]);
-        }
-    }
-
     public function testGetOrCreateCallMinimal(): void
     {
-        // Use the first user in the list as creator
         $creatorId = $this->testUsers[0];
 
         $call = $this->client->call($this->callType, $this->callId);
@@ -80,7 +65,6 @@ class CallTest extends TestCase
             )
         ));
 
-        // Assert the response structure
         $this->assertIsArray($response);
         $this->assertArrayHasKey('call', $response);
         $this->assertArrayHasKey('created_by', $response['call']);
@@ -89,10 +73,8 @@ class CallTest extends TestCase
 
     public function testGetOrCreateCallWithSettingsOverride(): void
     {
-        // Use the first user as creator
         $creatorId = $this->testUsers[0];
         
-        // Create a call with all possible fields
         $members = [
             new MemberRequest(
                 userId: $creatorId,
@@ -120,7 +102,6 @@ class CallTest extends TestCase
         $call = $this->client->call($this->callType, $this->callId);
         $response = $call->getOrCreateCall($request);
 
-        // Assert the response structure
         $this->assertIsArray($response);
         $this->assertArrayHasKey('call', $response);
         
@@ -135,7 +116,6 @@ class CallTest extends TestCase
 
     public function testGetOrCreateCallWithMultipleMembers(): void
     {
-        // Create a call with multiple members and notify flag
         $members = [
             new MemberRequest(userId: $this->testUsers[0], role: 'admin'),
             new MemberRequest(userId: $this->testUsers[1]),
@@ -155,20 +135,53 @@ class CallTest extends TestCase
         $call = $this->client->call($this->callType, $this->callId);
         $response = $call->getOrCreateCall($request);
 
-        // Assert the response structure
         $this->assertIsArray($response);
         $this->assertArrayHasKey('call', $response);
         $this->assertArrayHasKey('members', $response);
         
-        // Count members (may include created_by already)
         $memberIds = array_map(
             fn($member) => $member['user_id'] ?? $member['user']['id'],
             $response['members']
         );
         
-        // Ensure all our members are included
         $this->assertTrue(in_array($this->testUsers[0], $memberIds));
         $this->assertTrue(in_array($this->testUsers[1], $memberIds));
         $this->assertTrue(in_array($this->testUsers[2], $memberIds));
+    }
+    
+    public function testDeleteCall(): void
+    {
+        // First create a call
+        $creatorId = $this->testUsers[0];
+        $callId = Uuid::uuid4()->toString();
+        
+        $call = $this->client->call($this->callType, $callId);
+        $createResponse = $call->getOrCreateCall(new GetOrCreateCallRequest(
+            data: new CallRequest(
+                createdById: $creatorId
+            )
+        ));
+        
+        $this->assertIsArray($createResponse);
+        $this->assertArrayHasKey('call', $createResponse);
+        
+        $deleteResponse = $call->deleteCall();
+        
+        $this->assertIsArray($deleteResponse);
+        $this->assertArrayHasKey('duration', $deleteResponse);
+        
+        $callIdForHardDelete = Uuid::uuid4()->toString();
+        $callForHardDelete = $this->client->call($this->callType, $callIdForHardDelete);
+        
+        $createResponse = $callForHardDelete->getOrCreateCall(new GetOrCreateCallRequest(
+            data: new CallRequest(
+                createdById: $creatorId
+            )
+        ));
+        
+        $hardDeleteResponse = $callForHardDelete->deleteCall(true);
+        
+        $this->assertIsArray($hardDeleteResponse);
+        $this->assertArrayHasKey('duration', $hardDeleteResponse);
     }
 } 

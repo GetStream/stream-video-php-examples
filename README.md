@@ -209,6 +209,18 @@ $call->stopLive(new StopLiveRequest(
 ));
 ```
 
+## Delete calls
+
+API docs: https://getstream.io/video/docs/api/gdpr/calls/#calls-deletion
+
+```php
+// Soft delete
+$call->deleteCall();
+
+// Hard delete
+$call->deleteCall(true);
+```
+
 ## Delete users
 
 API docs: https://getstream.io/video/docs/api/gdpr/users/#users-deletion

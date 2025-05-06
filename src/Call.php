@@ -77,4 +77,18 @@ class Call
         
         return $this->client->httpService->post($endpoint, $request->toArray());
     }
+
+    /**
+     * Delete a call
+     *
+     * @param bool $hard Whether to perform a hard delete (true) or soft delete (false)
+     * @return array Response containing the delete call result
+     * @throws GuzzleException When the HTTP request fails
+     */
+    public function deleteCall(bool $hard = false): array
+    {
+        $endpoint = sprintf('api/v2/video/call/%s/%s/delete', $this->type, $this->id);
+        
+        return $this->client->httpService->post($endpoint, ['hard' => $hard]);
+    }
 }
