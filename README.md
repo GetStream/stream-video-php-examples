@@ -124,6 +124,9 @@ $token = $client->createCallToken(new CallTokenParams(
 API docs: https://getstream.io/video/docs/api/calls/#creating-calls
 
 ```php
+use App\DTO\GetOrCreateCallRequest;
+use App\DTO\CallRequest;
+
 // With only createdBy provided
 $call = $this->client->call($this->callType, $this->callId);
 $response = $call->getOrCreateCall(new GetOrCreateCallRequest(
