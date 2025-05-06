@@ -8,12 +8,16 @@ use App\DTO\TokenParams;
 use App\DTO\CallTokenParams;
 use App\DTO\UserRequest;
 use InvalidArgumentException;
-
+use App\Call;
 class Client
 {
     private string $apiKey;
     private TokenService $tokenService;
-    private HttpService $httpService;
+    /**
+     * HTTP service for making API requests
+     * @internal This property is meant for internal use only
+     */
+    public HttpService $httpService;
 
     public function __construct(string $apiKey, string $apiSecret)
     {
@@ -21,6 +25,18 @@ class Client
         $this->tokenService = new TokenService($apiSecret);
         $serverToken = $this->tokenService->createServerToken();
         $this->httpService = new HttpService(token: $serverToken, apiKey: $apiKey);
+    }
+
+    /**
+     * Creates a Call instance with the given type and id
+     * 
+     * @param string $type The type of the call
+     * @param string $id The id of the call
+     * @return Call The created Call instance
+     */
+    public function call(string $type, string $id): Call
+    {
+        return new Call($type, $id, $this);
     }
 
     /**

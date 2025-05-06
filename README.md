@@ -24,10 +24,16 @@ STREAM_API_KEY=<Your API key>
 STREAM_API_SECRET=<Your API secret>
 ```
 
-### Tests
+### Unit Tests
 
 ```bash
 composer test
+```
+
+### Integration Tests
+
+```bash
+vendor/bin/phpunit tests/Integration
 ```
 
 ### Main file
@@ -113,6 +119,48 @@ $token = $client->createCallToken(new CallTokenParams(
 ));
 ```
 
+## Create calls
+
+API docs: https://getstream.io/video/docs/api/calls/#creating-calls
+
+```php
+use App\DTO\GetOrCreateCallRequest;
+use App\DTO\CallRequest;
+
+// With only createdBy provided
+$call = $this->client->call($this->callType, $this->callId);
+$response = $call->getOrCreateCall(new GetOrCreateCallRequest(
+    data: new CallRequest(
+        createdById: '<user id>'
+    )
+));
+
+$call = $client->call('livestream', Uuid::uuid4()->toString());
+$callResponse = $call->getOrCreateCall(new GetOrCreateCallRequest(
+    // Will send call.notification to members
+    notify: true,
+    data: new CallRequest(
+        members: [new MemberRequest(userId: $user1['id']), new MemberRequest(userId: $user2['id'])],
+        createdById: $user1['id'],
+    ),
+));
+
+// Override call settings as well
+$callRequest = new CallRequest(
+    createdById: '<user id>',
+    startsAt: (new \DateTime('+1 hour'))->format(\DateTime::ATOM), // ISO 8601 date string
+    members: $members,
+    settingsOverride: new CallSettingsRequest(
+        backstage: new BackstageSettingsRequest(
+            enabled: true,
+            joinAheadTimeSeconds: 5*60
+        )
+    ),
+    // Additionally you can provide custom data as well
+    custom: ['topic' => 'Integration Test']
+);
+```
+
 ## Delete users
 
 API docs: https://getstream.io/video/docs/api/gdpr/users/#users-deletion
@@ -127,4 +175,4 @@ $response = $client->deleteUsers([$user['id']], [
 ## Useful resources
 
 - API docs: https://getstream.io/video/docs/api/
-- API spec file: https://github.com/GetStream/protocol/blob/main/openapi/v2/video-serverside-api.yaml
+- API spec file: https://getstream.github.io/protocol/?urls.primaryName=Video%20v2
