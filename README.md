@@ -1,7 +1,5 @@
 # Stream Video PHP Example
 
-🏗️ IN PROGRESS
-
 Example PHP code snippets for Stream Video API integration
 
 ## Requirements
