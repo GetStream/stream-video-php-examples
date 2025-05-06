@@ -6,7 +6,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Client;
 use App\DTO\TokenParams;
-use App\DTO\UserData;
+use App\DTO\UserRequest;
 use Dotenv\Dotenv;
 
 function main() {
@@ -21,7 +21,7 @@ function main() {
     $client = new Client($apiKey, $apiSecret);
 
     // Create a new user
-    $inputUser = new UserData(
+    $inputUser = new UserRequest(
         id: 'sara',
         role: 'user',
         name: 'Sara',

@@ -3,7 +3,7 @@
 namespace Tests\Integration;
 
 use App\Client;
-use App\DTO\UserData;
+use App\DTO\UserRequest;
 use PHPUnit\Framework\TestCase;
 use Dotenv\Dotenv;
 use Ramsey\Uuid\Uuid;
@@ -35,13 +35,13 @@ class ClientTest extends TestCase
     {
         // Create test user data
         $users = [
-            new UserData(
+            new UserRequest(
                 id: $this->userId1,
                 role: 'admin',
                 name: 'Test User 1',
                 image: 'https://example.com/avatar1.jpg'
             ),
-            new UserData(
+            new UserRequest(
                 id: $this->userId2,
                 role: 'user',
                 name: 'Test User 2',

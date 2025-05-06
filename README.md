@@ -52,7 +52,7 @@ $client = new Client($apiKey, $apiSecret);
 API docs: https://getstream.io/video/docs/api/authentication/#creating-users
 
 ```php
-$inputUser = new UserData(
+$inputUser = new UserRequest(
     id: 'sara',
     role: 'user',
     name: 'Sara',

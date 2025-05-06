@@ -6,7 +6,7 @@ use App\Services\TokenService;
 use App\Services\HttpService;
 use App\DTO\TokenParams;
 use App\DTO\CallTokenParams;
-use App\DTO\UserData;
+use App\DTO\UserRequest;
 use InvalidArgumentException;
 
 class Client
@@ -50,19 +50,19 @@ class Client
     /**
      * Upserts (creates or updates) users in the Stream Video API
      * 
-     * @param UserData[] $users Array of user data to upsert
+     * @param UserRequest[] $users Array of user data to upsert
      * @return array Response from the API containing the upserted users
      * @throws \GuzzleHttp\Exception\GuzzleException When the API request fails
      */
     public function upsertUsers(array $users): array
     {
-        $userData = array_reduce($users, function($acc, UserData $user) {
+        $userRequest = array_reduce($users, function($acc, UserRequest $user) {
             $acc[$user->getId()] = $user->toArray();
             return $acc;
         }, []);
         
         return $this->httpService->post('api/v2/users', [
-            'users' => $userData
+            'users' => $userRequest
         ]);
     }
 
