@@ -16,24 +16,20 @@ class ClientTest extends TestCase
 
     protected function setUp(): void
     {
-        // Load environment variables
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
         $dotenv->load();
         
-        // Initialize client with credentials from .env
         $this->client = new Client(
             $_ENV['STREAM_API_KEY'],
             $_ENV['STREAM_API_SECRET']
         );
 
-        // Generate unique UUIDs for test users
         $this->userId1 = Uuid::uuid4()->toString();
         $this->userId2 = Uuid::uuid4()->toString();
     }
 
     public function testUpsertUsers(): void
     {
-        // Create test user data
         $users = [
             new UserRequest(
                 id: $this->userId1,
@@ -50,22 +46,18 @@ class ClientTest extends TestCase
             )
         ];
 
-        // Perform the upsert
         $response = $this->client->upsertUsers($users);
 
-        // Assert the response structure
         $this->assertIsArray($response);
         $this->assertArrayHasKey('users', $response);
         $this->assertCount(2, $response['users']);
 
-        // Assert the returned users match what we sent
         foreach ($response['users'] as $user) {
             $this->assertArrayHasKey('id', $user);
             $this->assertArrayHasKey('role', $user);
             $this->assertArrayHasKey('name', $user);
             $this->assertArrayHasKey('image', $user);
             
-            // Find the corresponding input user
             $inputUser = array_filter($users, fn($u) => $u->getId() === $user['id']);
             $inputUser = reset($inputUser);
             
@@ -85,10 +77,8 @@ class ClientTest extends TestCase
 
     public function testDeleteUserWithoutOptions(): void
     {
-        // Delete the first user without any options
         $response = $this->client->deleteUsers([$this->userId1]);
 
-        // Assert the response structure
         $this->assertIsArray($response);
         $this->assertArrayHasKey('task_id', $response);
         $this->assertNotEmpty($response['task_id']);
@@ -96,13 +86,11 @@ class ClientTest extends TestCase
 
     public function testDeleteUserWithHardOptions(): void
     {
-        // Delete the second user with hard deletion options
         $response = $this->client->deleteUsers([$this->userId2], [
             'user' => 'hard',
             'calls' => 'hard'
         ]);
 
-        // Assert the response structure
         $this->assertIsArray($response);
         $this->assertArrayHasKey('task_id', $response);
         $this->assertNotEmpty($response['task_id']);

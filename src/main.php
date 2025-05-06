@@ -99,13 +99,6 @@ function main() {
     //     continue_transcription: true,
     // ));
     // echo "Call live features selectively stopped\n";
-
-    // Hard delete the users
-    $response = $client->deleteUsers([$user1['id'], $user2['id']], [
-        'user' => 'hard',
-        'calls' => 'hard'
-    ]);
-    echo "Delete user task created with id: " . $response['task_id'] . "\n";
 }
 
 // Run the main function
