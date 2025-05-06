@@ -10,6 +10,8 @@ use App\DTO\UserRequest;
 use App\DTO\GetOrCreateCallRequest;
 use App\DTO\CallRequest;
 use App\DTO\MemberRequest;
+use App\DTO\GoLiveRequest;
+use App\DTO\StopLiveRequest;
 use Dotenv\Dotenv;
 use Ramsey\Uuid\Uuid;
 
@@ -52,7 +54,7 @@ function main() {
     ));
     echo "Generated token: " . $token . "\n";
 
-    $call = $client->call('livestream', Uuid::uuid4()->toString());
+    $call = $client->call('livestream', 'testing-livestream-with-php');
     $callResponse = $call->getOrCreateCall(new GetOrCreateCallRequest(
         // Will send call.notification to members
         notify: true,
@@ -62,6 +64,41 @@ function main() {
         ),
     ));
     echo "Call created: " . $callResponse['call']['id'] . "\n";
+    
+    // Go live only works when there is an active session for the call
+    // // Start broadcasting the call
+    // $call->goLive(new GoLiveRequest());
+    // echo "Call is now live with default settings\n";
+    
+    // // Start broadcasting with additional options
+    // $call->goLive(new GoLiveRequest(
+    //     // Optionally start displaying closed captions for call participants
+    //     start_closed_caption: true,
+    //     // Optionally start HLS broadcast
+    //     start_hls: true,
+    //     // Optionally start recording the call
+    //     start_recording: true,
+    //     // Optionally start saving the call transcription to a file
+    //     start_transcription: true,
+    // ));
+    // echo "Call is now live with additional features enabled\n";
+
+    // // Stop broadcasting the call
+    // $call->stopLive(new StopLiveRequest());
+    // echo "Call is no longer live with default settings\n";
+    
+    // // Stop broadcasting with additional options
+    // $call->stopLive(new StopLiveRequest(
+    //     // Optionally prevent stopping HLS broadcast
+    //     continue_hls: true,
+    //     // Optionally prevent stopping recording
+    //     continue_recording: true,
+    //     // Optionally prevent stopping closed captions
+    //     continue_closed_caption: true,
+    //     // Optionally prevent stopping call transcription
+    //     continue_transcription: true,
+    // ));
+    // echo "Call live features selectively stopped\n";
 
     // Hard delete the users
     $response = $client->deleteUsers([$user1['id'], $user2['id']], [

@@ -58,6 +58,8 @@ $client = new Client($apiKey, $apiSecret);
 API docs: https://getstream.io/video/docs/api/authentication/#creating-users
 
 ```php
+use App\DTO\UserRequest;
+
 $inputUser = new UserRequest(
     id: 'sara',
     role: 'user',
@@ -159,6 +161,52 @@ $callRequest = new CallRequest(
     // Additionally you can provide custom data as well
     custom: ['topic' => 'Integration Test']
 );
+```
+
+## Go live and stop live
+
+### Go live
+
+API docs: https://getstream.io/video/docs/api/streaming/backstage/#go-live 
+
+```php
+use App\DTO\GoLiveRequest;
+
+$call->goLive(new GoLiveRequest());
+
+// or provide optional config params
+$call->goLive(new GoLiveRequest(
+    // Optionally start displaying closed captions for call participants
+    start_closed_caption: true,
+    // Optionally start HLS broadcast
+    start_hls: true,
+    // Optionally start recording the call
+    start_recording: true,
+    // Optionally start saving the call transcription to a file
+    start_transcription: true,
+));
+```
+
+### Stop live
+
+API docs: https://getstream.io/video/docs/api/streaming/backstage/#stop-live
+
+```php
+use App\DTO\StopLiveRequest;
+
+$call->stopLive(new StopLiveRequest());
+
+// or provide optional config params
+$call->stopLive(new StopLiveRequest(
+    // Optionally prevent stopping HLS broadcast
+    continue_hls: true,
+    // Optionally prevent stopping recording
+    continue_recording: true,
+    // Optionally prevent stopping closed captions
+    continue_closed_caption: true,
+    // Optionally prevent stopping call transcription
+    continue_transcription: true,
+));
 ```
 
 ## Delete users
