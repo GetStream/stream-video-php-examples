@@ -109,21 +109,27 @@ class HttpService
      * Send a POST request
      *
      * @param string $endpoint
-     * @param array $data
+     * @param array|null $data
      * @return array
      * @throws GuzzleException
      */
-    public function post(string $endpoint, array $data = []): array
+    public function post(string $endpoint, ?array $data = []): array
     {
         try {
             echo "\nSending POST request to: " . $this->baseUrl . '/' . $endpoint . "\n";
             echo "Request body: " . json_encode($data, JSON_PRETTY_PRINT) . "\n";
             
-            $response = $this->client->post($endpoint, [
+            $options = [
                 'query' => $this->getQueryParams(),
-                'json' => $data,
                 'headers' => $this->getRequestHeaders(),
-            ]);
+            ];
+            
+            // Only include json data if it's not null
+            if ($data !== null) {
+                $options['json'] = $data;
+            }
+            
+            $response = $this->client->post($endpoint, $options);
 
             return json_decode($response->getBody()->getContents(), true);
         } catch (GuzzleException $e) {
@@ -135,18 +141,24 @@ class HttpService
      * Send a PUT request
      *
      * @param string $endpoint
-     * @param array $data
+     * @param array|null $data
      * @return array
      * @throws GuzzleException
      */
-    public function put(string $endpoint, array $data = []): array
+    public function put(string $endpoint, ?array $data = []): array
     {
         try {
-            $response = $this->client->put($endpoint, [
+            $options = [
                 'query' => $this->getQueryParams(),
-                'json' => $data,
                 'headers' => $this->getRequestHeaders(),
-            ]);
+            ];
+            
+            // Only include json data if it's not null
+            if ($data !== null) {
+                $options['json'] = $data;
+            }
+            
+            $response = $this->client->put($endpoint, $options);
 
             return json_decode($response->getBody()->getContents(), true);
         } catch (GuzzleException $e) {
