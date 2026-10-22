@@ -1,3 +1,5 @@
+> **These examples are out of date.** They call the Video REST API by hand with JWTs, from before Stream had a PHP server SDK. For current code, see [getstream-php](https://github.com/GetStream/getstream-php).
+
 # Stream Video PHP Example
 
 Example PHP code snippets for Stream Video API integration
